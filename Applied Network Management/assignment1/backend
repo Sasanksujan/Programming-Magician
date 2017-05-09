@@ -1,0 +1,13 @@
+#!/bin/sh
+while :
+do
+	STARTTIME=$(date +%s)
+	perl ./backend.pl
+	ENDTIME=$(date +%s)
+
+	#scripttime=$(($ENDTIME-$STARTTIME))
+	#sleep_for=$((30 - $scripttime))
+	echo "==========="
+	echo "Script is Running "	
+	sleep 60
+done

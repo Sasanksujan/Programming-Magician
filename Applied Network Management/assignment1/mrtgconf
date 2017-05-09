@@ -1,0 +1,50 @@
+#!usr/bin/perl
+use DBI();
+use FindBin '$Bin';
+
+my @path = split('/', $Bin);
+pop @path;
+push(@path, "db.conf");
+$path = join('/', @path);
+open FILE, "$path" or die $!;
+
+my @line     = <FILE>; 
+my @host = split('"', $line[0]);
+my @port = split('"', $line[1]);
+my @database = split('"', $line[2]);
+my @username = split('"', $line[3]);
+my @password = split('"', $line[4]);
+
+$database = $database[1];
+$host = $host[1];
+$port = $port[1];
+$username = $username[1];
+$password = $password[1];
+
+my $driver = "mysql";
+my $dsn = "DBI:mysql:database=$database;host=$host;port=$port";
+my $dbh = DBI->connect($dsn, $username, $password) 
+	or die $DBI::errstr;
+
+
+my $sth = $dbh->prepare("SELECT IP, PORT, COMMUNITY FROM `DEVICES` ");
+
+$sth->execute() or die $DBI::errstr;
+
+system ("mkdir /etc/mrtg ");
+system ("mv /etc/mrtg.cfg /etc/mrtg");
+open(my $file, '>', "/var/www/mrtg/index.html");
+$str="";
+while (my ($IP, $PORT, $COMMUNITY)=$sth->fetchrow_array())
+{
+$str.="$COMMUNITY\@$IP:$PORT ";
+}	
+
+system (`cfgmaker --global "WorkDir: /var/www/mrtg" --global "Options[_]: growright,bits" --global "RunAsDaemon: Yes" --global "Interval: 5" --output=/etc/mrtg/mrtg.cfg $str `);
+system ("mkdir /var/www/mrtg");
+
+system ("indexmaker --output=/var/www/mrtg/index.html /etc/mrtg/mrtg.cfg");
+system ("env LANG=C /usr/bin/mrtg /etc/mrtg/mrtg.cfg --logging /var/log/mrtg.log");
+
+$|=1; #auto flush
+

@@ -1,0 +1,8 @@
+##########################################################################################################################################
+                                                             ASSIGNMENT – 2
+###########################################################################################################################################
+
+
+RRD cannot update the values for the same timestamp. So, the script updates the changed values for a different timestamp. This creates some lag in updating the values in RRD, and printing the values in the graphs. Also, the backend script has a one minute sleep, so that the script runs for every one minute, in order to sample all the devices and servers for every 1 minute. Due to these events, there is a delay between sampling the web server and the updated graph.
+
+

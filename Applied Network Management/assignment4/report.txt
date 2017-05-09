@@ -1,0 +1,21 @@
+#########################################################################################################################################
+                                                       				ASSIGNMENT – 4
+########################################################################################################################################
+
+Explanation for code:
+Using db.conf credentials we are connected to the database and a table named ‘sassign4’ is created initially with the columns named ip, port, community, uptime, success, fail, fail1, total_req, time. Then, IP, PORT, and COMMUNITY are selected from DEVICES table. An snmp session is created for all the devices using non-blocking requests. The system uptime values for all the devices are obtained by using its OID '1.3.6.1.2.1.1.3.0'. The uptime values are stored in a varbindlist by sending the requests through already defined snmp session. 
+Later, the logic is divided in to two parts, system uptime defined and system uptime not defined. 
+
+(SYS UPTIME DEFINED) If the system uptime is defined, it is divided in to two parts, to create a column or update a column. 
+(CREATE) If there is no device with same ip, port and community, as in DEVICES table, the details of the device is created in sassign4 table, and the respective value for uptime is inserted. The success, fail1, total_req values are inserted as 1, 0, 1 respectively. The time value is also inserted as local time value.
+(UPDATE) If there is already a device existed in sassign4 table as in DEVICES table, the values for success and total_req are incremented to one value, and fail1 is updated as 0.
+
+(SYS UPTIME NOT DEFINED) If the system uptime is not defined, it is divided in to two parts, to create a column or update a column.
+(CREATE) It is similar as in the case of sys uptime defined, but here the values of fail and fail1 values are inserted as 1,1 respectively. 
+(UPDATE) It is similar as in the case of sys uptime defined, but here the values of fail and total_req are incremented to one value, and fail1 is updated same as fail value.
+
+The fronted page displays the devices and its status with the colour. The working devices are shown in white. The devices that are not working are shown in lighter, and the darkness of the colour increases with the increase in requests for that device. The colour of the device is shown by considering the values of fail1 in the sassign4 table. As the value increases, the colour intensity increases. If the value of fail1 is 0, then the colour is white. 
+
+ 
+Non-blocking:
+In this method, the bulk requests are sent for all the devices. Even if a single device fails to respond, it waits for a specified amount of time and then proceeds to the next device. A non-blocking object queues the SNMP message and returns immediately, allowing the flow of the code to continue. The queued SNMP messages are not sent until an event loop is entered by calling the snmp_dispatcher() method.
