@@ -1,0 +1,3 @@
+rootProject.name = 'Line0X'
+
+include ':app'
